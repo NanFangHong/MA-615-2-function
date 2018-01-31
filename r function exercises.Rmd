@@ -52,7 +52,7 @@ c
   
   
   
-(b) Now write a fuction \texttt{tmpFn3} which takes 2 arguments $x$ and $n$ where $x$ is a single number and $n$ is a strictly positive integer.  The function should return the value of   
+(b) Now write a function \texttt{tmpFn3} which takes 2 arguments $x$ and $n$ where $x$ is a single number and $n$ is a strictly positive integer.  The function should return the value of   
 $$1 + \frac{x}{1} + \frac{x^2}{2} + \frac{x^3}{3} + ... + \frac{x^n}{n}$$
 
 ```{r}
@@ -207,8 +207,8 @@ weekday <- function(day, month, year){
    + floor(yVec/4)
    + floor(cVec/4)
    - 2 * cVec
-    ) %% 7 + 1
-  )
+    ) %% 7 + 1 
+  ) 
 }
 ```
 
@@ -218,11 +218,102 @@ weekday <- function(day, month, year){
 weekday(28, 1, 2018)
 ```
 
+### 8.
+
+(a) 
+Suppose $x_0 = 1$ and $x_1 = 2$ and 
+$$x_j = x_{j-1} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
+Write a function \texttt{testLoop} which takes the single argument $n$ and returns the first $n - 1$ values of the sequence $\left \{ x_j \right \}_{j \geq 0}$: that means the values of ${x_0, x_1, x_2, ...,x_{n - 2}}$
+
+```{r}
+
+```
 
 
+(b)
+Now write a function \texttt{testLoop2} which takes a single argument \texttt{yVec} which is a vector. The function should return $$\sum_{j=1}^{n}e^{j}$$
+where $n$ is the length of \texttt{yVec}.
+
+```{r}
+testLoop2 <- function(yVec){
+  return(sum(exp(1:length(yVec))))
+}
+```
+
+### 9.
+\textit{Solution of the difference equation $x_{n}=rx_{n-1}(1-x_{n-1})$, with starting value $x_1$} 
+
+(a) Write a function \texttt{quadmap( start, rho, niter )} which returns the vector $(x_1,...,x_n)$ where $x_{k}=rx_{k-1}(1-x_{k-1})$ and \par \  \ \texttt{niter} denotes $n$, \par \  \ \texttt{start} denotes $x_1$, and \par \  \ \texttt{rho} denotes $r$. \par Try out the function you have written: \par $\bullet$ for $r = 2$ and $0<x_1<1$ you should get $x_{n}\rightarrow 0.5$ as $n\rightarrow\infty$. \par $\bullet$ try \texttt{tmp <- quadmap(start=0.95, rho=2.99, niter=500)}\par Now switch back to the Commands window and type: \par \  \ \texttt{plot(tmp, type="l")} \par Also try the plot \texttt{plot(tmp[300:500], type="l")} 
+
+```{r}
+quadmap <- function(start, rho, niter){
+  yVec <- c(start)
+  loop <- 1
+  while (loop != niter){
+    yVec <- rbind(yVec, rho * yVec[loop] * (1 - yVec[loop]))
+    loop <- loop + 1
+    
+  }
+  return(yVec)
+}
+```
+Try out
+```{r}
+quadmap(0.1, 2, 9)
+tmp <- quadmap(start=0.95, rho=2.99, niter=500)
+plot(tmp, type="l")
+plot(tmp[300:500], type="l")
+```
 
 
+(b) Now write a function which determines the number of iterations needed to get $\left | x_{n} - x_{n-1} \right |<0.02$. So this function has only 2 arguments: \texttt{start} and \texttt{rho}. (For \texttt{start=0.95} and \texttt{rho=2.99}, the answer is 84.)
+
+```{r}
+determineNumber <- function(start, rho){
+  yVec <- quadmap(start, rho, 2)
+  
+  loop <- 2
+  while (abs(yVec[length(yVec)] - yVec[length(yVec) - 1]) >= 0.02){
+    yVec <- rbind(yVec, rho * yVec[loop] * (1 - yVec[loop]))
+    loop <- loop + 1
+  }
+  return(length(yVec) - 1)
+}
+determineNumber(0.95, 2.99)
+```
 
 
+### 10.
+(a) Given a vector $(x_1,...,x_n)$, the sample autocorrelation of lag $k$ is defined to be 
+$$r_{k}= \frac{\sum_{i=k+1}^{n}(x_{i}-\bar{x})(x_{i-k}-\bar{x})}{\sum_{i=1}^{n}(x_{i}-\bar{x})^{2}}$$
+Thus
+$$r_{1}= \frac{\sum_{i=2}^{n}(x_{i}-\bar{x})(x_{i-1}-\bar{x})}{\sum_{i=1}^{n}(x_{i}-\bar{x})^{2}}=\frac{(x_{2}-\bar{x})(x_{1}-\bar{x})+\cdots +(x_{n}-\bar{x})(x_{n-1}-\bar{x})}{\sum_{i=1}^{n}(x_{i}-\bar{x})^{2}}$$
+Write a function \texttt{tmpFn(cVec)} which takes a single argument \texttt{xVec} which is a vector and returns a \texttt{list} of two values: $r_1$ and $r_2$.
 
+\par In particular, find $r_1$ and $r_2$ for the vector $(2,5,8,...,53,56)$.
+```{r}
+tmpFn <- function(xVec, k){
+  xVecMean <- mean(xVec)
+  lowerSum <- sum((xVec - xVecMean) ^ 2)
+  upperSum <- sum(sapply((k+1):length(xVec), function(i) (xVec[i] - xVecMean) * (xVec[i-k] - xVecMean)))
+  return(upperSum / lowerSum)
+}
+
+tmpFn(seq(2,56,3), 1)
+
+tmpFn(seq(2,56,3), 2)
+```
+
+(b)
+(Harder.) Generalise the function so that it takes two arguments: the vector \texttt{xVec} and an integer \texttt{k} which lies between $1$ and $n-1$ where $n$ is the length of \texttt{xVec}. \par The function should return a vector of the values $(r_0 = 1, r_1, ...,r_k)$ \par If you used a loop to answer part (b), then you need to be aware that much, much better solutions are possible--see exercises 4 (Hint: \texttt{sapply}.)
+
+```{r}
+tmpFn4 <- function(xVec, k){
+  outPut <- rep(0, k)
+  for (i in 1:k) outPut[i] <- tmpFn(xVec, i)
+  return(outPut)
+}
+
+tmpFn4(seq(2,56,3), 2)
+```
 
