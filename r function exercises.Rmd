@@ -225,8 +225,77 @@ Suppose $x_0 = 1$ and $x_1 = 2$ and
 $$x_j = x_{j-1} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
 Write a function \texttt{testLoop} which takes the single argument $n$ and returns the first $n - 1$ values of the sequence $\left \{ x_j \right \}_{j \geq 0}$: that means the values of ${x_0, x_1, x_2, ...,x_{n - 2}}$
 
-```{r}
 
+
+Professor Haviland admits that here is a typo: if you put $j = 1$, $x_0$ and $x_1$ don't satisfy the recursive equation. Professor Haviland asks me in email:
+
+"So, what do you think is wrong with this problem?  Imagine corrected statements of the problem.  There aren't very many. How do the series produced by the corrected statement differ?  How are they the same? "
+
+
+There are many possible statements that can make problem correct.
+
+
+1. $j$ begins with 2, instead of 1. 
+2. $x_1 = 3$, instead of $x_1 = 2$
+3. $$x_{j+1} = x_{j-1} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
+4. $$x_{j+1} = x_{j} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
+
+
+Conventionally, in recursive equation indexes go from highest to lowest from left to right. So, there are many other possibilities which we don't cover here. 
+I will do those four possible corrected statements and see if I have extra credit. 
+
+1. $j$ begins with 2, instead of 1.
+
+```{r}
+tmpFn <-function(n){
+  xVec <- c(1, 2)
+  for (i in 2: (n - 2)){
+    xVec[i + 1] <- xVec[i] + 2 / xVec[i]
+  }
+  return(xVec)
+}
+
+tmpFn(10)
+```
+
+
+2. $x_1 = 3$, instead of $x_1 = 2$
+```{r}
+tmpFn <-function(n){
+  xVec <- c(1, 2)
+  for (i in 1: (n - 2)){
+    xVec[i + 1] <- xVec[i] + 2 / xVec[i]
+  }
+  return(xVec)
+}
+
+tmpFn(10)
+```
+3. $$x_{j+1} = x_{j-1} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
+
+```{r}
+tmpFn <-function(n){
+  xVec <- c(1, 2)
+  for (i in 1: (n - 3)){
+    xVec[i + 2] <- xVec[i] + 2 / xVec[i]
+  }
+  return(xVec)
+}
+
+tmpFn(10)
+```
+4. $$x_{j+1} = x_{j} + \frac{2}{x_{j-1}}  \mbox{ for } j = 1, 2, ....$$
+
+```{r}
+tmpFn <-function(n){
+  xVec <- c(1, 2)
+  for (i in 1: (n - 3)){
+    xVec[i + 2] <- xVec[i + 1] + 2 / xVec[i]
+  }
+  return(xVec)
+}
+
+tmpFn(10)
 ```
 
 
